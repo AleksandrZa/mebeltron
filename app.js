@@ -59,14 +59,7 @@ const menuButton=document.querySelector('.menu-button');const nav=document.query
 function closeMenu(){nav.classList.remove('open');menuButton.setAttribute('aria-expanded','false');menuButton.setAttribute('aria-label','Открыть меню');}
 menuButton.addEventListener('click',()=>{const open=nav.classList.toggle('open');menuButton.setAttribute('aria-expanded',String(open));menuButton.setAttribute('aria-label',open?'Закрыть меню':'Открыть меню');});
 nav.querySelectorAll('a').forEach(a=>a.addEventListener('click',closeMenu));
-function updateNavigation(){
-  nav.querySelectorAll('a').forEach(a=>{
-    if(a.hash===location.hash)a.setAttribute('aria-current','location');
-    else a.removeAttribute('aria-current');
-  });
-}
-window.addEventListener('hashchange',updateNavigation);
-updateNavigation();
+
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeMenu();});
 document.addEventListener('click',e=>{if(!nav.contains(e.target)&&!menuButton.contains(e.target))closeMenu();});
 document.querySelector('#year').textContent=new Date().getFullYear();
