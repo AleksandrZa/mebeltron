@@ -1,19 +1,20 @@
 'use strict';
 const photos = [
-  ['0O4A4825','kitchen','Кухня и гостиная'],['0O4A4892','kitchen','Фактуры и рабочая зона'],['0O4A4794','storage','Гардеробная за стеклом'],['0O4A4750','living','Пространство для жизни'],
-  ['0O4A4912','storage','Встроенное хранение'],['0O4A4991','details','Детали ванной комнаты'],['0O4A4800','living','Спальня в спокойных тонах'],['0O4A4778','living','Рабочее место у окна'],
-  ['0O4A4741','kitchen','Графитовая кухня'],['0O4A4746','living','Гостиная и ТВ-зона'],['0O4A4755','living','Открытая планировка'],['0O4A4768','storage','Стеклянные перегородки'],
-  ['0O4A4815','living','Спальня: детали'],['0O4A4824','kitchen','Кухня по размеру пространства'],['0O4A4851','kitchen','Кухонный остров'],['0O4A4860','kitchen','Встроенная кухня'],
-  ['0O4A4904','storage','Лаконичные фасады'],['0O4A4917','storage','Шкаф до потолка'],['0O4A4928','storage','Геометрия хранения'],['0O4A4940','storage','Прихожая'],
-  ['0O4A4945','details','Ванная комната'],['0O4A4952','details','Подвесная тумба'],['0O4A4957','details','Ванная: фактуры'],['0O4A4963','storage','Скрытое хранение'],
-  ['0O4A4970','details','Свет и фактура'],['0O4A4973','details','Детали интерьера'],['0O4A4997','details','Сочетание материалов'],['0O4A5010','living','Рабочая зона']
-].map(([id,category,title])=>({id,category,title}));
+  ['0O4A4825','kitchen','Кухня и гостиная'],['0O4A4892','kitchen','Фактуры и рабочая зона'],['0O4A4794','storage','Гардеробная за стеклом'],
+  ['0O4A4912','storage','Встроенное хранение'],['0O4A4991','details','Детали ванной комнаты'],['0O4A4800','living','Спальня в спокойных тонах'],
+  ['0O4A4746','living','Гостиная и ТВ-зона'],
+  ['0O4A4851','kitchen','Кухонный остров'],
+  ['0O4A4940','storage','Прихожая'],
+  ['0O4A4957','details','Ванная: фактуры'],
+  ['0O4A5010','living','Рабочая зона']
+].map(([id,category,title])=>({id,category,title})).concat(window.additionalPhotos || []);
 const gallery=document.querySelector('#gallery');
 const more=document.querySelector('#show-more');
-let filter='all',expanded=false,visiblePhotos=photos,photoIndex=0,lastFocus;
+let filter='all',shownCount=8,visiblePhotos=photos,photoIndex=0,lastFocus;
+document.querySelector('[data-filter="all"] span').textContent=photos.length;
 function renderGallery(){
   visiblePhotos=photos.filter(p=>filter==='all'||p.category===filter);
-  const shown=expanded?visiblePhotos:visiblePhotos.slice(0,8);
+  const shown=visiblePhotos.slice(0,shownCount);
   gallery.replaceChildren(...shown.map(p=>{
     const button=document.createElement('button');button.className='gallery-card';
     button.setAttribute('aria-label',`Открыть фотографию: ${p.title}`);
@@ -24,11 +25,11 @@ function renderGallery(){
   more.hidden=shown.length===visiblePhotos.length;
 }
 document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{
-  filter=button.dataset.filter;expanded=false;
+  filter=button.dataset.filter;shownCount=8;
   document.querySelectorAll('[data-filter]').forEach(b=>{const selected=b===button;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
   renderGallery();
 }));
-more.addEventListener('click',()=>{expanded=true;renderGallery();gallery.querySelectorAll('button')[8]?.focus({preventScroll:true});});
+more.addEventListener('click',()=>{const previous=shownCount;shownCount+=24;renderGallery();gallery.querySelectorAll('button')[previous]?.focus({preventScroll:true});});
 function showDialog(dialog){lastFocus=document.activeElement;dialog.showModal();document.body.classList.add('modal-open');}
 document.querySelectorAll('dialog').forEach(dialog=>{
   dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
