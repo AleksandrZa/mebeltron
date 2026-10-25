@@ -1,5 +1,5 @@
 'use strict';
-const photos = [
+const photos = window.fullPhotos || [
   ['0O4A4825','kitchen','Кухня и гостиная'],['0O4A4892','kitchen','Фактуры и рабочая зона'],['0O4A4794','storage','Гардеробная за стеклом'],
   ['0O4A4912','storage','Встроенное хранение'],['0O4A4991','details','Детали ванной комнаты'],['0O4A4800','living','Спальня в спокойных тонах'],
   ['0O4A4746','living','Гостиная и ТВ-зона'],
@@ -10,9 +10,11 @@ const photos = [
 ].map(([id,category,title])=>({id,category,title})).concat(window.additionalPhotos || []);
 const gallery=document.querySelector('#gallery');
 const more=document.querySelector('#show-more');
-let filter='all',shownCount=8,visiblePhotos=photos,photoIndex=0,lastFocus;
-document.querySelector('[data-filter="all"] span').textContent=photos.length;
+const initialCount=Number(gallery?.dataset.pageSize || 8);
+let filter='all',shownCount=initialCount,visiblePhotos=photos,photoIndex=0,lastFocus;
+if(gallery) document.querySelector('[data-filter="all"] span').textContent=photos.length;
 function renderGallery(){
+  if(!gallery)return;
   visiblePhotos=photos.filter(p=>filter==='all'||p.category===filter);
   const shown=visiblePhotos.slice(0,shownCount);
   gallery.replaceChildren(...shown.map(p=>{
@@ -25,11 +27,11 @@ function renderGallery(){
   more.hidden=shown.length===visiblePhotos.length;
 }
 document.querySelectorAll('[data-filter]').forEach(button=>button.addEventListener('click',()=>{
-  filter=button.dataset.filter;shownCount=8;
+  filter=button.dataset.filter;shownCount=initialCount;
   document.querySelectorAll('[data-filter]').forEach(b=>{const selected=b===button;b.classList.toggle('active',selected);b.setAttribute('aria-pressed',String(selected));});
   renderGallery();
 }));
-more.addEventListener('click',()=>{const previous=shownCount;shownCount+=24;renderGallery();gallery.querySelectorAll('button')[previous]?.focus({preventScroll:true});});
+more?.addEventListener('click',()=>{const previous=shownCount;shownCount+=24;renderGallery();gallery.querySelectorAll('button')[previous]?.focus({preventScroll:true});});
 function showDialog(dialog){lastFocus=document.activeElement;dialog.showModal();document.body.classList.add('modal-open');}
 document.querySelectorAll('dialog').forEach(dialog=>{
   dialog.addEventListener('click',event=>{if(event.target===dialog){const r=dialog.getBoundingClientRect();if(event.clientX<r.left||event.clientX>r.right||event.clientY<r.top||event.clientY>r.bottom)dialog.close();}});
