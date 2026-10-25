@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://mebeltron-krasnodar-studio.ambdxtr.chatgpt.site/sitemap.xml
+Sitemap: https://mebeltron-krasnodar-studio.ambdxtr.chatgpt.site/sitemap-images.xml
